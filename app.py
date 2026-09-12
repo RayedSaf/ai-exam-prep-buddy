@@ -148,9 +148,26 @@ def show_learning_journey():
 
             else:
                 st.markdown(
-                    f"**{icon} {name}**\n\n"
-                    f"○ Upcoming\n\n"
-                    f"{description}"
+                    f"""
+                    <div style="
+                        padding: 14px 12px;
+                        border-radius: 10px;
+                        border: 1px solid rgba(128,128,128,0.2);
+                        background: rgba(128,128,128,0.05);
+                        min-height: 108px;
+                    ">
+                        <div style="font-weight: 600; margin-bottom: 6px; opacity: 0.85;">
+                            {icon} {name}
+                        </div>
+                        <div style="font-size: 12px; opacity: 0.55; margin-bottom: 6px;">
+                            ○ Upcoming
+                        </div>
+                        <div style="font-size: 13px; opacity: 0.65;">
+                            {description}
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
                 )
 
     st.info(
@@ -200,6 +217,42 @@ def show_ai_error(error):
             f"{error.message}"
         )
 
+def render_question_card(index, total, question, label="QUESTION"):
+
+    difficulty = question.get("difficulty", "Medium")
+
+    st.markdown(
+        f"""
+        <div style="
+            padding: 18px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(128,128,128,0.3);
+            margin-bottom: 14px;
+        ">
+            <div style="
+                font-size: 12px;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+                opacity: 0.6;
+                margin-bottom: 10px;
+            ">
+                {label} {index} OF {total}
+            </div>
+            <div style="
+                font-size: 17px;
+                font-weight: 600;
+                margin-bottom: 10px;
+                line-height: 1.4;
+            ">
+                {question['question']}
+            </div>
+            <div style="font-size: 13px; opacity: 0.75;">
+                📌 {question['topic']} &nbsp;·&nbsp; {difficulty}
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 # ---------------------------------------------------------
 # STUDY MATERIAL
@@ -310,32 +363,11 @@ if "quiz" in st.session_state:
         start=1
     ):
 
-        st.markdown(
-            f"""
-            <div style="
-                padding: 18px;
-                border-radius: 12px;
-                border: 1px solid rgba(128,128,128,0.3);
-                margin-bottom: 10px;
-            ">
-                <div style="
-                    font-size: 14px;
-                    opacity: 0.75;
-                    margin-bottom: 8px;
-                ">
-                    QUESTION {i} OF {total_questions}
-                </div>
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-        st.markdown(
-            f"### {question['question']}"
-        )
-
-        st.caption(
-            f"📌 Topic: {question['topic']}"
+        render_question_card(
+            i,
+            total_questions,
+            question,
+            label="QUESTION"
         )
 
         options = question["options"]
@@ -777,12 +809,11 @@ if "targeted_quiz" in st.session_state:
         start=1
     ):
 
-        st.write(
-            f"### Practice Question {i}"
-        )
-
-        st.write(
-            question["question"]
+        render_question_card(
+            i,
+            len(st.session_state.targeted_quiz["questions"]),
+            question,
+            label="PRACTICE QUESTION"
         )
 
         options = question["options"]
@@ -1042,12 +1073,11 @@ if (
             start=1
         ):
 
-            st.write(
-                f"### Retest Question {i}"
-            )
-
-            st.write(
-                question["question"]
+            render_question_card(
+                i,
+                len(st.session_state.retest_quiz["questions"]),
+                question,
+                label="RETEST QUESTION"
             )
 
             options = question["options"]
