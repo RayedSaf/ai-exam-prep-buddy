@@ -307,6 +307,12 @@ if generate_button:
             st.session_state.quiz = quiz
             st.session_state.study_material = study_material
 
+            # Clear old quiz answers
+            for i in range(1, 11):
+                st.session_state.pop(f"question_{i}", None)
+                st.session_state.pop(f"targeted_question_{i}", None)
+                st.session_state.pop(f"retest_question_{i}", None)
+
             # Clear old results
             st.session_state.pop("topic_stats", None)
             st.session_state.pop("weak_topics", None)

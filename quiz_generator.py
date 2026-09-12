@@ -217,6 +217,79 @@ quiz_schema = {
     ]
 }
 
+# ---------------------------------------------------------
+# VALIDATE GEMINI QUIZ OUTPUT
+# ---------------------------------------------------------
+
+def validate_quiz(quiz):
+    """
+    Validate the structure returned by Gemini before
+    the application tries to use it.
+    """
+
+    if not isinstance(quiz, dict):
+        raise GeminiAPIError(
+            "The AI returned an invalid quiz format.",
+            "api"
+        )
+
+    questions = quiz.get("questions")
+
+    if not isinstance(questions, list) or not questions:
+        raise GeminiAPIError(
+            "The AI did not return any valid quiz questions.",
+            "api"
+        )
+
+    required_fields = [
+        "question",
+        "options",
+        "correct_answer",
+        "topic",
+        "difficulty",
+        "explanation"
+    ]
+
+    for question in questions:
+
+        if not isinstance(question, dict):
+            raise GeminiAPIError(
+                "The AI returned an invalid question format.",
+                "api"
+            )
+
+        for field in required_fields:
+
+            if field not in question:
+                raise GeminiAPIError(
+                    "The AI returned an incomplete quiz question.",
+                    "api"
+                )
+
+        options = question["options"]
+        correct_answer = question["correct_answer"]
+
+        if not isinstance(options, dict):
+            raise GeminiAPIError(
+                "The AI returned invalid answer options.",
+                "api"
+            )
+
+        required_options = {"A", "B", "C", "D"}
+
+        if not required_options.issubset(options.keys()):
+            raise GeminiAPIError(
+                "The AI returned incomplete answer options.",
+                "api"
+            )
+
+        if correct_answer not in required_options:
+            raise GeminiAPIError(
+                "The AI returned an invalid correct answer.",
+                "api"
+            )
+
+    return quiz
 
 # ---------------------------------------------------------
 # GENERATE DIAGNOSTIC QUIZ
@@ -275,7 +348,7 @@ what a student does and does not understand.
         response_json_schema=quiz_schema
     )
 
-    return response.parsed
+    return validate_quiz(response.parsed)
 
 
 # ---------------------------------------------------------
@@ -513,7 +586,7 @@ Return ONLY the required JSON structure.
         response_json_schema=quiz_schema
     )
 
-    return response.parsed
+    return validate_quiz(response.parsed)
 
 # ---------------------------------------------------------
 # GENERATE AI REVISION LESSON
@@ -635,35 +708,4 @@ has improved after targeted revision and practice.
         response_json_schema=quiz_schema
     )
 
-    return response.parsed
-# ---------------------------------------------------------
-# TEST
-# ---------------------------------------------------------
-
-if __name__ == "__main__":
-
-    test_material = """
-    Newton's laws of motion describe the relationship
-    between force, mass, and acceleration.
-
-    Newton's Second Law is F = ma.
-
-    Newton's Third Law states that for every action
-    there is an equal and opposite reaction.
-    """
-
-    try:
-
-        quiz = generate_quiz(
-            test_material,
-            5
-        )
-
-        print(quiz)
-
-    except GeminiAPIError as e:
-
-        print(
-            f"[{e.error_type.upper()}] "
-            f"{e.message}"
-        )
+    return validate_quiz(response.parsed)
