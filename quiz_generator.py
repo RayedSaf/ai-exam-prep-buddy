@@ -588,40 +588,7 @@ Return only the revision lesson text.
     return response.text.strip()
 
 
-# ---------------------------------------------------------
-# MOCK RETEST QUIZ FOR DEVELOPMENT
-# ---------------------------------------------------------
 
-def generate_mock_retest_quiz(weak_topics):
-
-    topics = list(weak_topics)
-
-    questions = []
-
-    for i in range(5):
-
-        topic = topics[i % len(topics)]
-
-        questions.append({
-            "question": f"Practice question {i + 1} about {topic}?",
-            "options": {
-                "A": "Option A",
-                "B": "Option B",
-                "C": "Option C",
-                "D": "Option D"
-            },
-            "correct_answer": "A",
-            "topic": topic,
-            "difficulty": "Medium",
-            "explanation": (
-                f"This is a temporary development question "
-                f"for the topic: {topic}."
-            )
-        })
-
-    return {
-        "questions": questions
-    }
 
 def generate_retest_quiz(study_material, weak_topics, num_questions=5):
     """

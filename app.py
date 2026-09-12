@@ -15,13 +15,29 @@ st.set_page_config(
     layout="centered"
 )
 
+st.markdown(
+    """
+    <style>
+    .block-container {
+        padding-top: 2.5rem;
+        padding-bottom: 3rem;
+        max-width: 820px;
+    }
+    h1, h2, h3 {
+        letter-spacing: -0.3px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 st.title("📚 AI Exam Prep Buddy")
 
 st.markdown(
     """
     ### Find what you don't know. Fix it. Test again.
 
-    **Learn → Test → Diagnose → Practice → Retest**
+    **Learn → Diagnose → Revise → Practice → Retest**
     
     Your AI-powered study companion that identifies your weak areas
     and creates a personalized path to improve them.
@@ -606,7 +622,7 @@ if (
         f"{topic} ({percentage}%)"
         for topic, percentage
         in st.session_state.weak_topics.items()
-    )
+    )   
 
     revision_button = st.button(
         "📚 Teach Me These Topics",
@@ -697,7 +713,9 @@ if (
     )
 
     weak_topics_text = ", ".join(
-        st.session_state.weak_topics.keys()
+        f"{topic} ({percentage}%)"
+        for topic, percentage
+        in st.session_state.weak_topics.items()
     )
 
     st.info(
