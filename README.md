@@ -36,17 +36,19 @@ Instead of simply generating practice questions, the app follows a learning loop
 
 ## 🤖 AI/ML Integration
 
-Google Gemini is used as the core intelligence layer of the application.
+Google Gemini is used as the core generative AI system within the application.
 
 The AI is responsible for:
 
 - Generating diagnostic questions from study material
-- Identifying topic-level learning gaps
-- Creating personalized revision content
-- Generating targeted practice questions
-- Generating fresh retest questions
+- Assigning questions to relevant topics and difficulty levels
+- Creating personalized revision lessons
+- Generating targeted practice questions for weak areas
+- Generating fresh retest questions using new scenarios
 
-The application then performs deterministic scoring and learning-progress analysis based on the student's answers.
+The application then performs deterministic scoring and topic-level performance analysis based on the student's answers.
+
+This creates an adaptive learning loop where the student's performance determines which topics receive additional practice and revision.
 
 ## 🛠️ Tech Stack
 
@@ -61,5 +63,5 @@ The application then performs deterministic scoring and learning-progress analys
 Clone the repository:
 
 ```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
+git clone https://github.com/RayedSaf/ai-exam-prep-buddy
 cd ai-exam-prep-buddy

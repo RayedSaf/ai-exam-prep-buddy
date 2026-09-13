@@ -23,8 +23,14 @@ st.markdown(
         padding-bottom: 3rem;
         max-width: 820px;
     }
+
     h1, h2, h3 {
         letter-spacing: -0.3px;
+    }
+
+    /* Hide Streamlit's heading anchor icons */
+    .stMarkdown a.anchor-link {
+        display: none !important;
     }
     </style>
     """,
@@ -39,10 +45,14 @@ st.markdown(
 
     **Learn → Diagnose → Revise → Practice → Retest**
     
-    Your AI-powered study companion that identifies your weak areas
-    and creates a personalized path to improve them.
+    An adaptive AI exam-prep system that diagnoses your weak topics,
+    focuses your revision, and retests you to measure improvement.
+
+    Your performance determines what you practice next.
     """
 )
+
+
 # ---------------------------------------------------------
 # HELPER — NORMALIZE TOPIC NAMES
 # ---------------------------------------------------------
