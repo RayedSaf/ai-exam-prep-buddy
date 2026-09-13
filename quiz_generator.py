@@ -666,13 +666,16 @@ Return only the revision lesson text.
 def generate_retest_quiz(study_material, weak_topics, num_questions=5):
     """
     Generate a fresh retest focused on the student's original weak topics.
-    The questions should test understanding rather than repeat the diagnostic.
+
+    The retest should measure whether the student can apply the same
+    concepts in genuinely new situations after targeted practice.
     """
 
     weak_topics_text = ", ".join(
         f"{topic} ({percentage}%)"
         for topic, percentage in weak_topics.items()
-    )  
+    )
+
     prompt = f"""
 You are an adaptive exam-preparation AI.
 
@@ -686,20 +689,144 @@ Their original study material is:
 
 Create a fresh retest quiz with exactly {num_questions} multiple-choice questions.
 
-IMPORTANT:
-- Focus primarily on the weak topics listed above.
-- Give more questions to topics with lower diagnostic percentages.
-- Create NEW questions that do not simply repeat the diagnostic questions.
-- Test understanding and application, not just memorization.
-- Use a reasonable mix of difficulty.
-- Every question must have exactly four options: A, B, C, D.
-- Only one option must be correct.
-- Include the relevant topic/subtopic for every question.
-- Include a short, student-friendly explanation of the correct answer.
-- Return ONLY the requested JSON structure.
+=========================================================
+RETEST PURPOSE
+=========================================================
 
-The purpose of this retest is to measure whether the student's understanding
-has improved after targeted revision and practice.
+The purpose of this retest is to determine whether the student
+can apply the weak concepts in NEW situations after targeted
+practice.
+
+The retest must test the SAME underlying concepts as the
+student's weak topics, but it must use genuinely DIFFERENT
+questions and situations.
+
+=========================================================
+ANTI-REPETITION REQUIREMENT
+=========================================================
+
+This is extremely important.
+
+Do NOT:
+
+- Copy any question from the diagnostic quiz.
+- Reuse the same scenario from a previous question.
+- Simply change numbers in a previous question.
+- Rephrase a previous question with different wording.
+- Create a question that tests the same situation in disguise.
+- Reuse distinctive wording from previous questions.
+
+Instead:
+
+- Use a genuinely new scenario or context.
+- Test the same underlying concept through a different situation.
+- Prefer application and reasoning over simple definition recall.
+- Make the student demonstrate understanding rather than memory
+  of a previous question.
+
+For example, if a previous question tested Newton's Third Law
+using a truck colliding with a car, do NOT create another
+truck/car collision question.
+
+Instead, test Newton's Third Law using a different interaction,
+such as two skaters pushing apart, a person pushing a wall,
+or another situation supported by the study material.
+
+The scenario must change, while the underlying concept remains
+the same.
+
+=========================================================
+ADAPTIVE PRIORITY
+=========================================================
+
+Focus primarily on the weak topics listed above.
+
+Give greater attention to topics with lower diagnostic
+percentages.
+
+Topics below 50% should receive especially strong focus.
+
+Topics around 50–79% should receive moderate focus.
+
+Do not spend unnecessary questions on stronger areas.
+
+=========================================================
+QUESTION DESIGN
+=========================================================
+
+Test understanding and application.
+
+Prefer:
+
+- Realistic scenarios
+- Conceptual reasoning
+- Predicting what happens when conditions change
+- Applying principles to unfamiliar situations
+- Numerical reasoning when supported by the study material
+
+Avoid simple definition-only questions.
+
+=========================================================
+DIFFICULTY
+=========================================================
+
+Use a natural mixture of difficulty.
+
+For 5 questions, aim approximately for:
+
+- 1 Easy application question
+- 2 Medium reasoning/application questions
+- 1 Medium-Hard question
+- 1 Harder application or reasoning question
+
+=========================================================
+STUDY MATERIAL RESTRICTION
+=========================================================
+
+Use ONLY information supported by the study material.
+
+Do not introduce advanced facts, formulas, terminology,
+or assumptions that the student was not given.
+
+=========================================================
+QUESTION REQUIREMENTS
+=========================================================
+
+Every question must have:
+
+- A question
+- Exactly four options: A, B, C, D
+- Exactly ONE correct answer
+- The correct answer
+- The relevant topic/subtopic
+- Difficulty: Easy, Medium, or Hard
+- A short, student-friendly explanation
+
+Incorrect options must be plausible.
+
+Do not make the correct answer obvious because it is longer,
+more detailed, or differently worded.
+
+=========================================================
+QUALITY CHECK
+=========================================================
+
+Before returning the quiz, internally verify:
+
+1. Exactly {num_questions} questions exist.
+2. Every question has exactly four options.
+3. Every question has exactly one correct answer.
+4. Every question has a topic.
+5. Every question has a difficulty.
+6. Every question has an explanation.
+7. The weakest topics receive the strongest focus.
+8. Questions primarily test application and reasoning.
+9. Questions are genuinely different from previous practice.
+10. No question is a paraphrase or minor variation of another
+    likely diagnostic or practice question.
+11. Every question is supported by the study material.
+
+Return ONLY the required JSON structure.
 """
 
     response = safe_generate(

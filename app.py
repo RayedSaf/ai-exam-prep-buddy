@@ -347,7 +347,10 @@ if generate_button:
 # DISPLAY INITIAL QUIZ
 # ---------------------------------------------------------
 
-if "quiz" in st.session_state:
+if (
+    "quiz" in st.session_state
+    and not st.session_state.get("generating_targeted", False)
+):
 
     st.divider()
 
@@ -765,7 +768,15 @@ if (
         type="primary"
     )
 
+    # First run: clear the old review before starting AI generation
     if practice_button:
+
+        st.session_state.generating_targeted = True
+
+        st.rerun()
+
+    # Second run: generate the targeted quiz with the old review hidden
+    if st.session_state.get("generating_targeted", False):
 
         try:
 
@@ -789,11 +800,20 @@ if (
                 None
             )
 
+            st.session_state.pop(
+                "targeted_percentage",
+                None
+            )
+
+            st.session_state.generating_targeted = False
+
             st.success(
                 "🎯 Targeted practice quiz generated!"
             )
 
         except GeminiAPIError as error:
+
+            st.session_state.generating_targeted = False
 
             show_ai_error(error)
 
@@ -802,8 +822,10 @@ if (
 # DISPLAY TARGETED QUIZ
 # ---------------------------------------------------------
 
-if "targeted_quiz" in st.session_state:
-
+if (
+    "targeted_quiz" in st.session_state
+    and not st.session_state.get("generating_targeted", False)
+):
     st.divider()
 
     st.subheader(
